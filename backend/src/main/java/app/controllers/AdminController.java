@@ -40,7 +40,7 @@ public class AdminController {
             put("/admin/tasks/{id}", taskController::updateTask, Role.ADMIN);
             delete("/admin/tasks/{id}", taskController::deleteTask, Role.ADMIN);
             patch("/admin/tasks/{id}/position", taskController::moveTask, Role.ADMIN);
-            patch("/admin/tasks/{id}/completed", taskController::toggleCompleted, Role.ADMIN);
+            patch("/admin/tasks/{id}/status", taskController::setStatus, Role.ADMIN);
 
         };
     }

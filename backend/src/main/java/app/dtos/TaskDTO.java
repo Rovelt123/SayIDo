@@ -1,6 +1,7 @@
 package app.dtos;
 
 import app.enums.Priority;
+import app.enums.Status;
 import lombok.*;
 
 import java.util.UUID;
@@ -22,5 +23,5 @@ public class TaskDTO {
     private float price;
     private String deadline;
     private float estimatedHours;
-    private boolean completed;
+    private Status status;
 }

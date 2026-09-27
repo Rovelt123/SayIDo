@@ -552,3 +552,73 @@
     letter-spacing: 0.09375rem;
     text-transform: uppercase;
 }
+
+
+.budgetOverview {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  padding: 1.5rem;
+
+  border: 0.0625rem solid var(--line);
+  border-radius: 1rem;
+
+  background: var(--bg);
+
+  animation: budgetOpen 0.50s ease-out;
+  
+}
+
+@keyframes budgetOpen {
+  from {
+    opacity: 0%;
+    transform: translateY(-2rem);
+  }
+
+  to {
+    opacity: 100%;
+    transform: translateY(0);
+  }
+}
+
+.budgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.budgetTitle {
+  margin: 0.25rem 0 0;
+  font-family: inherit;
+  font-size: 1.5rem;
+}
+
+.budgetClose {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.budgetSummary {
+  display:flex;
+  border: 1rem;
+  color: var(--ink);
+  font-size: 5rem;
+  background: transparent;
+  justify-content: center;
+  align-items: center;
+}
+
+.budgetCategories {
+  margin-top: 1rem;
+}
+
+.budgetRow {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 0.75rem 0;
+
+  border-bottom: 0.0625rem solid var(--line);
+}

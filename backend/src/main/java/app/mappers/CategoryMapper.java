@@ -4,6 +4,8 @@ import app.dtos.CategoryDTO;
 import app.entities.Category;
 import app.entities.Task;
 import app.mappers.generic.IMapper;
+import app.enums.Status;
+import app.services.BudgetService;
 
 import java.util.Set;
 import java.util.Comparator;
@@ -21,6 +23,7 @@ public class CategoryMapper implements IMapper<Category, CategoryDTO> {
             .id(dto.getId())
             .position(dto.getPosition())
             .title(dto.getTitle())
+            .categoryBudget(dto.getCategoryBudget())
             .build();
 
         if (dto.getTasks() != null) {
@@ -50,7 +53,7 @@ public class CategoryMapper implements IMapper<Category, CategoryDTO> {
             .position(entity.getPosition())
             .title(entity.getTitle())
             .taskCount(entity.getTasks().size())
-            .completedTaskCount(entity.getTasks().stream().filter(Task::isCompleted).count())
+            .completedTaskCount(entity.getTasks().stream().filter(task -> task.getStatus() == Status.DONE).count())
             .totalEstimatedHours(entity.getTasks().stream().mapToDouble(Task::getEstimatedHours).sum())
             .tasks(
                 entity.getTasks().stream()
@@ -58,6 +61,8 @@ public class CategoryMapper implements IMapper<Category, CategoryDTO> {
                 .map(taskMapper::toDTO)
                 .collect(Collectors.toCollection(LinkedHashSet::new))
             )
+            .totalTasksPrice(BudgetService.totalSpentCategory(entity))
+            .categoryBudget(entity.getCategoryBudget())
             .build();
     }
 }

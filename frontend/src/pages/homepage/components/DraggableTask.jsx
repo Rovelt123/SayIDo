@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import styles from './CategoryColumn.module.css'
 
-function DraggableTask({ task, onEditTask, onDeleteTask, onToggleTask }) {
+function DraggableTask({ task, onEditTask, onDeleteTask, onChangeStatus }) {
   const {
     attributes,
     listeners,
@@ -18,20 +18,19 @@ function DraggableTask({ task, onEditTask, onDeleteTask, onToggleTask }) {
   }
 
   return (
-    <li ref={setNodeRef} style={style} className={`${styles.task} ${task.completed ? styles.taskDone : ''} `} {...listeners} {...attributes}>
+    <li ref={setNodeRef} style={style} className={`${styles.task} `} {...listeners} {...attributes}>
       <span className={styles.taskHeader}>
-        <input
-          className={styles.taskCheckbox}
-          type="checkbox"
-          checked={task.completed}
-          onPointerDown={(e) => e.stopPropagation()}
-          onChange={() => onToggleTask(task)}
-          aria-label={`Mark ${task.title} as done`}
-        />
 
         <span className={styles.taskTitle}>
           {task.title}
         </span>
+
+        
+              <select className={styles.statusSelect} id="edit-task-status" name="status" value={task.status} onPointerDown={(e) => e.stopPropagation()} onChange={(e) => onChangeStatus(task, e.target.value)}>
+                <option value="TODO">To-do</option>
+                <option value="IN_PROGRESS">In progress</option>
+                <option value="DONE">Done</option>
+              </select>
 
         <span className={styles.actionsContainer}>
           <button

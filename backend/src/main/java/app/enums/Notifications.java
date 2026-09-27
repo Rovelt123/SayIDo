@@ -71,6 +71,7 @@ public enum Notifications {
     CATEGORY_UNCATEGORIZED_DELETE("The Uncategorized category cannot be deleted."),
     CATEGORY_NAME_RESERVED("Uncategorized is a reserved category name."),
     CATEGORY_UNCATEGORIZED_RENAME("The Uncategorized category cannot be renamed or replaced."),
+    CATEGORY_BUDGET_INVALID("Category budget is invalid"),
 
     // TASK
     TASK_CREATED("Task created."),
@@ -82,8 +83,9 @@ public enum Notifications {
     TASK_TITLE_REQUIRED("You must enter a task title."),
     TASK_DEADLINE_INVALID("Deadline must be a valid date in YYYY-MM-DD format."),
     TASK_PRIORITY_INVALID("Priority must be LOW, MEDIUM or HIGH."),
+    TASK_STATUS_INVALID("Status must be TODO, IN_PROGRESS or DONE."),
+    TASK_STATUS_UPDATED("Task status updated."),
     TASK_ESTIMATE_INVALID("Estimated hours must be a number."),
-    TASK_COMPLETED_UPDATED("Task completion status updated."),
     TASK_MOVE_DIFFERENT_WEDDING("Tasks can only be moved between categories in the same wedding."),
     POSITION_INVALID("position must be an integer."),
     POSITION_RANGE("position must be between 0 and %s."),

@@ -39,9 +39,13 @@ public class CategoryService {
     // ________________________________________________________
 
     public Category createCategory(UUID weddingId, UUID ownerId, Context ctx) {
+        double categoryBudget = 0;
 
         Map<String, String> body = ErrorHandler.tryBodyMap(ctx, Notifications.BODY_EMPTY.getDisplayName());
         String title = ErrorHandler.tryString(body.get("title"), Notifications.CATEGORY_TITLE_REQUIRED.getDisplayName()).strip();
+        if (body.get("categoryBudget") != null) {
+            categoryBudget = ErrorHandler.tryParseDouble(body.get("categoryBudget"), "Category budget is invalid");
+        }
 
         if (isUncategorized(title)) {
             throw new ApiException(400, Notifications.CATEGORY_NAME_RESERVED.getDisplayName());
@@ -49,7 +53,7 @@ public class CategoryService {
 
         Wedding wedding = ErrorHandler.tryEntity(weddingDAO.getByIdAndOwnerId(weddingId, ownerId), Notifications.WEDDING_NOT_FOUND.getDisplayName());
         int position = wedding.getCategories().stream().mapToInt(Category::getPosition).max().orElse(-1) + 1;
-        Category category = Category.builder().title(title).position(position).build();
+        Category category = Category.builder().title(title).position(position).categoryBudget(categoryBudget).build();
         wedding.addCategory(category);
         return categoryDAO.create(category);
 
@@ -67,6 +71,12 @@ public class CategoryService {
             throw new ApiException(400, Notifications.CATEGORY_UNCATEGORIZED_RENAME.getDisplayName());
         }
         category.setTitle(title);
+
+        if (body.get("categoryBudget") != null) {
+            double categoryBudget = ErrorHandler.tryParseDouble(body.get("categoryBudget"), Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+
+            category.setCategoryBudget(categoryBudget);
+        }
         return categoryDAO.update(category);
     }
 

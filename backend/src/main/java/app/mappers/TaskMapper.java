@@ -19,7 +19,7 @@ public class TaskMapper implements IMapper<Task, TaskDTO> {
             .link(dto.getLink())
             .deadline(dto.getDeadline() == null ? null : ErrorHandler.tryParseLocalDate(dto.getDeadline(), Notifications.TASK_DEADLINE_INVALID.getDisplayName()))
             .estimatedHours(dto.getEstimatedHours())
-            .completed(dto.isCompleted())
+            .status(dto.getStatus())
             .price(dto.getPrice())
             .build();
     }
@@ -42,7 +42,7 @@ public class TaskMapper implements IMapper<Task, TaskDTO> {
             .link(entity.getLink())
             .deadline(entity.getDeadline() == null ? null : entity.getDeadline().toString())
             .estimatedHours(entity.getEstimatedHours())
-            .completed(entity.isCompleted())
+            .status(entity.getStatus())
             .price(entity.getPrice())
             .build();
     }

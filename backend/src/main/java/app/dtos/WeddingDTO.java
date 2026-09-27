@@ -23,6 +23,10 @@ public class WeddingDTO {
     private int taskCount;
     private long completedTaskCount;
     private double totalEstimatedHours;
+    private double totalSpent;
+    private double remainingBudget;
+    private double budgetUsedPercent;
+    private double budgetOverrun;
 
     @Builder.Default
     private Set<CategoryDTO> categories = new HashSet<>();

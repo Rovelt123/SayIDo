@@ -31,6 +31,9 @@ public class Category {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private double categoryBudget;
+
     @Builder.Default
     @OneToMany(
             mappedBy = "category",

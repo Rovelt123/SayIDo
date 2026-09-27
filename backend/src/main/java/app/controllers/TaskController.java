@@ -48,7 +48,7 @@ public class TaskController extends BaseController<Task, TaskDTO> {
             get("/tasks/{id}", controller::getMyTaskByID, Role.USER);
             post("/categories/{categoryId}/tasks", controller::createTask, Role.USER);
             put("/tasks/{id}", controller::updateTask, Role.USER);
-            patch("/tasks/{id}/completed", controller::toggleCompleted, Role.USER);
+            patch("/tasks/{id}/status", controller::setStatus, Role.USER);
             patch("/tasks/{id}/position", controller::moveTask, Role.USER);
             delete("/tasks/{id}", controller::deleteTask, Role.USER);
         };
@@ -118,13 +118,13 @@ public class TaskController extends BaseController<Task, TaskDTO> {
 
     // ________________________________________________________
 
-    public void toggleCompleted(Context ctx) {
+    public void setStatus(Context ctx) {
 
         UUID id = ErrorHandler.tryParseUUID(ctx.pathParam("id"), Notifications.TASK_ID_INVALID.getDisplayName());
 
-        Task task = taskService.toggleCompleted(id, userService.getOwnerId(ctx));
+        Task task = taskService.setStatus(id, userService.getOwnerId(ctx), ctx);
 
-        respond(ctx, 200, Notifications.TASK_COMPLETED_UPDATED.getDisplayName(), Map.of("data", taskMapper.toDTO(task)));
+        respond(ctx, 200, Notifications.TASK_STATUS_UPDATED.getDisplayName(), Map.of("data", taskMapper.toDTO(task)));
     }
 
     // ________________________________________________________

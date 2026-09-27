@@ -1,6 +1,7 @@
 package app.entities;
 
 import app.enums.Priority;
+import app.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,8 +44,9 @@ public class Task {
     private float estimatedHours;
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean completed = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
+    private Status status = Status.TODO;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)

@@ -6,6 +6,7 @@ import app.entities.Category;
 import app.entities.Task;
 import app.enums.Notifications;
 import app.enums.Priority;
+import app.enums.Status;
 import app.exceptions.ApiException;
 import app.server.Setup;
 import app.utils.ErrorHandler;
@@ -64,9 +65,13 @@ public class TaskService {
 
     // ________________________________________________________
 
-    public Task toggleCompleted(UUID id, UUID ownerId) {
+    public Task setStatus(UUID id, UUID ownerId, Context ctx) {
+        Map<String, String> body = ErrorHandler.tryBodyMap(ctx, Notifications.BODY_EMPTY.getDisplayName());
         Task task = ErrorHandler.tryEntity(taskDAO.getByIdAndOwnerId(id, ownerId), Notifications.TASK_NOT_FOUND.getDisplayName());
-        task.setCompleted(!task.isCompleted());
+        Status status = ErrorHandler.tryParseEnum(Status.class, body.get("status"), Notifications.TASK_STATUS_INVALID.getDisplayName());
+        task.setStatus(status);
+
+
         return taskDAO.update(task);
     }
 
@@ -140,6 +145,8 @@ public class TaskService {
 
         Priority priority = body.get("priority") == null ? task.getPriority() : ErrorHandler.tryParseEnum(Priority.class, body.get("priority"), Notifications.TASK_PRIORITY_INVALID.getDisplayName());
 
+        Status status = body.get("status") == null ? task.getStatus() : ErrorHandler.tryParseEnum(Status.class, body.get("status"), Notifications.TASK_STATUS_INVALID.getDisplayName());
+
         task.setTitle(title);
         task.setDescription(body.get("description"));
         task.setLink(link);
@@ -147,5 +154,6 @@ public class TaskService {
         task.setDeadline(deadline);
         task.setEstimatedHours(hours);
         task.setPriority(priority);
+        task.setStatus(status);
     }
 }
