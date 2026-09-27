@@ -55,6 +55,32 @@ public class BudgetService {
 
     // ________________________________________________________
 
+    public static double remainingCategoryBudget(Category category) {
+        return category.getCategoryBudget() - totalSpentCategory(category);
+    }
+
+    // ________________________________________________________
+
+    public static double categoryBudgetUsedPercent(Category category) {
+        return category.getCategoryBudget() > 0
+                ? totalSpentCategory(category) / category.getCategoryBudget() * 100 : 0;
+    }
+
+    // ________________________________________________________
+
+    public static double categoryBudgetOverrun(Category category) {
+        return Math.max(0, -remainingCategoryBudget(category));
+    }
+
+    // ________________________________________________________
+
+    public static double percentageOfTotalSpent(Category category) {
+        double spent = totalSpent(category.getWedding());
+        return spent > 0 ? totalSpentCategory(category) / spent * 100 : 0;
+    }
+
+    // ________________________________________________________
+
     private static double totalBudget(Wedding wedding) {
         return wedding == null ? 0 : wedding.getBudget();
     }

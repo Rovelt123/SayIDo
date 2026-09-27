@@ -1,14 +1,15 @@
 .container {
   min-width: 260px;
   min-height: 9rem;
-  padding: 1rem 0 0;
+  padding: 0;
 
   background: transparent;
   border: none;
-  border-top: 1px solid var(--ink);
 }
 
 .header {
+  border-top: 1px solid var(--ink);
+  padding-top: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -151,9 +152,9 @@
 }
 
 .aboveBudget {
-    margin: 0.375rem 0 0;
+    margin: 0 0 0.5rem;
 
-    color: #b42318;;
+    color: #b42318;
     font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.0625rem;

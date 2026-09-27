@@ -5,7 +5,8 @@ import CategoryColumn from "./components/CategoryColumn.jsx";
 import DraggableCategory from "./components/DraggableCategory.jsx";
 import { getToken, getUser, clearSession } from "../../utils/storage";
 import { DndContext } from "@dnd-kit/core";
-const API_BASE = 'https://sys2.roneu.dk/api'
+import { API_BASE } from "../../utils/api";
+import { formatMoney } from "../../js/format";
 
 // ________________________________________________________
 
@@ -122,7 +123,6 @@ function HomePage() {
     description: "",
   });
 
-  const [showBudgetOverview, setShowBudgetOverview] = useState(false);
 
   const taskCount = categories.reduce(
     (total, category) => total + (category.tasks?.length ?? 0),
@@ -551,7 +551,7 @@ function HomePage() {
 
     const body = {
       title: editTaskForm.title,
-      deadline: editTaskForm.deadline,
+      deadline: editTaskForm.deadline || null,
       price: editTaskForm.price === "" ? "0" : editTaskForm.price,
       estimatedHours:
         editTaskForm.estimatedHours === "" ? "0" : editTaskForm.estimatedHours,
@@ -708,8 +708,7 @@ function HomePage() {
 
     const body = {
       title: createTaskForm.title,
-      deadline:
-        createTaskForm.deadline === "" ? null : setCreateTaskForm.deadline,
+      deadline: createTaskForm.deadline || null,
       price: createTaskForm.price === "" ? "0" : createTaskForm.price,
       priority: createTaskForm.priority,
       description: createTaskForm.description,
@@ -1092,60 +1091,22 @@ function HomePage() {
                 <div className={styles.stat}>
                   <span className={styles.statValue}>
                     {" "}
-                    {totalPrice.toLocaleString("en-US")} kr.{" "}
+                    {formatMoney(totalPrice)}{" "}
                   </span>
                   <span className={styles.statLabel}>
                     {wedding.budget > 0
-                      ? `of ${wedding.budget.toLocaleString("en-US")} kr. budget`
+                      ? `of ${formatMoney(wedding.budget)} budget`
                       : "planned cost"}
                   </span>
                 </div>
               </div>
+              <Link className={styles.createWedding} to="/budget">
+                Budget Overview
+              </Link>
             </section>
           </>
         )}
 
-        {showBudgetOverview && (
-          <section className={styles.budgetOverview}>
-            <div className={styles.budgetHeader}>
-              <div>
-                <p className={styles.eyebrow}>Budget overview</p>
-                <h2 className={styles.budgetTitle}>Wedding budget</h2>
-              </div>
-
-              <button
-                className={styles.budgetClose}
-                onClick={() => setShowBudgetOverview(false)}
-              >
-                {" "}
-                ×{" "}
-              </button>
-            </div>
-
-            <div className={styles.budgetSummary}>
-              <span className={styles.budgetGraphPlaceholder}>
-                INSERT GRAPH
-              </span>
-            </div>
-
-            <div className={styles.budgetCategories}>
-              <div className={styles.budgetRow}>
-                <span>Venue</span>
-                <span>15,000 / 20,000 kr.</span>
-              </div>
-
-              <div className={styles.budgetRow}>
-                <span>Food & drinks</span>
-                <span>12,000 / 10,000 kr.</span>
-              </div>
-
-              <div className={styles.budgetRow}>
-                <span>Flowers & decor</span>
-                <span>5,500 / 8,000 kr.</span>
-              </div>
-            </div>
-          </section>
-        )}
 
         <DndContext onDragEnd={handleDragEnd}>
           <div className={styles.categoryBoard}>
@@ -1159,7 +1120,6 @@ function HomePage() {
                 onEditTask={handleOpenEditTask}
                 onDeleteTask={handleOpenDeleteTask}
                 onChangeStatus={handleStatusTask}
-                totalPrice={totalPrice}
               />
             ))}
 
@@ -1443,7 +1403,6 @@ function HomePage() {
               type="date"
               value={editTaskForm.deadline}
               onChange={handleEditChangeTask}
-              required
             />
 
             <label htmlFor="edit-task-price"> Price </label>
@@ -1578,7 +1537,6 @@ function HomePage() {
               type="date"
               value={createTaskForm.deadline}
               onChange={handleCreateChangeTask}
-              required
             />
 
             <label htmlFor="task-price"> Price </label>

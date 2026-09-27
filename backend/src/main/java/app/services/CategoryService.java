@@ -44,7 +44,7 @@ public class CategoryService {
         Map<String, String> body = ErrorHandler.tryBodyMap(ctx, Notifications.BODY_EMPTY.getDisplayName());
         String title = ErrorHandler.tryString(body.get("title"), Notifications.CATEGORY_TITLE_REQUIRED.getDisplayName()).strip();
         if (body.get("categoryBudget") != null) {
-            categoryBudget = ErrorHandler.tryParseDouble(body.get("categoryBudget"), "Category budget is invalid");
+            categoryBudget = parseBudget(body.get("categoryBudget"));
         }
 
         if (isUncategorized(title)) {
@@ -70,13 +70,12 @@ public class CategoryService {
         if (isUncategorized(category.getTitle()) || isUncategorized(title)) {
             throw new ApiException(400, Notifications.CATEGORY_UNCATEGORIZED_RENAME.getDisplayName());
         }
-        category.setTitle(title);
-
+        double categoryBudget = category.getCategoryBudget();
         if (body.get("categoryBudget") != null) {
-            double categoryBudget = ErrorHandler.tryParseDouble(body.get("categoryBudget"), Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
-
-            category.setCategoryBudget(categoryBudget);
+            categoryBudget = parseBudget(body.get("categoryBudget"));
         }
+        category.setTitle(title);
+        category.setCategoryBudget(categoryBudget);
         return categoryDAO.update(category);
     }
 
@@ -93,6 +92,28 @@ public class CategoryService {
             uncategorized = Category.builder().title(Categories.UNCATEGORIZED.getDisplayName()).position(0).build();
         }
         categoryDAO.deleteAndMoveTasks(category, uncategorized);
+    }
+
+    // ________________________________________________________
+
+    public Category updateBudget(UUID weddingId, UUID id, UUID ownerId, String value) {
+        Category category = ErrorHandler.tryEntity(categoryDAO.getByIdAndOwnerId(id, ownerId),
+                Notifications.CATEGORY_NOT_FOUND.getDisplayName());
+        if (!category.getWedding().getId().equals(weddingId)) {
+            throw new ApiException(404, Notifications.CATEGORY_NOT_FOUND.getDisplayName());
+        }
+        category.setCategoryBudget(parseBudget(value));
+        return categoryDAO.update(category);
+    }
+
+    // ________________________________________________________
+
+    private double parseBudget(String value) {
+        double budget = ErrorHandler.tryParseDouble(value, Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+        if (!Double.isFinite(budget) || budget < 0) {
+            throw new ApiException(400, Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+        }
+        return budget;
     }
 
     // ________________________________________________________
