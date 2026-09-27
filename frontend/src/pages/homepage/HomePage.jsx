@@ -1040,6 +1040,11 @@ function HomePage() {
                   {" "}
                   Edit{" "}
                 </button>
+
+                <button className={styles.editWedding} onClick={() => setShowBudgetOverview(true)}>
+                  Budget overview
+                </button>
+            
                 <button
                   className={styles.deleteWedding}
                   onClick={() => setShowDeleteWarning(true)}
