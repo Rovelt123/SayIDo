@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import { saveSession } from '../../utils/storage'
 import styles from './LoginPage.module.css'
 
-const API_BASE = 'https://sys2.roneu.dk/api'
+import { API_BASE } from "../../utils/api";
 
 
 // ________________________________________________________

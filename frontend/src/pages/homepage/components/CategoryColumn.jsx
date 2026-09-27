@@ -14,7 +14,6 @@ function CategoryColumn({
   onEditTask,
   onDeleteTask,
   onChangeStatus,
-  totalPrice,
 }) {
   const isUncategorized = category.title === "Uncategorized";
 
@@ -32,16 +31,9 @@ function CategoryColumn({
     0,
   );
 
-  const categoryPercentageBudget =
-    totalPrice > 0 ? (totalTasksPrice / totalPrice) * 100 : 0;
-
   const categoryBudget = category.categoryBudget ?? 0;
 
-  const haveCategoryBudget = categoryBudget > 0;
-
-  const aboveBudget = haveCategoryBudget && totalTasksPrice > categoryBudget;
-
-  const budgetExceedAmont = aboveBudget ? totalTasksPrice - categoryBudget : 0;
+  const aboveBudget = totalTasksPrice > categoryBudget;
 
   const { setNodeRef, isOver } = useDroppable({ id: category.id });
 
@@ -50,6 +42,14 @@ function CategoryColumn({
       className={`${styles.container} ${isOver ? styles.dragOver : ""}`}
       ref={setNodeRef}
     >
+      {aboveBudget && (
+
+        <span className={styles.aboveBudget}>
+          <i className="fa-solid fa-triangle-exclamation"/>{" "}
+          over budget
+        </span>
+
+      )}
       <div className={styles.header}>
         <h3 className={styles.smallTitle}>{category.title}</h3>
 
@@ -88,29 +88,6 @@ function CategoryColumn({
         <p className={styles.columnTotals}>
           {tasks.length} {tasks.length === 1 ? "task" : "tasks"},
           {Math.round(totalHours * 10) / 10} h,
-          <br />
-
-          {haveCategoryBudget ? (
-            <span className={aboveBudget ? styles.aboveBudget : ""}>
-              {" "}
-              {totalTasksPrice} of {categoryBudget} kr. used currently.
-              <br />
-
-              {aboveBudget && (
-                <>
-                  {budgetExceedAmont} kr. over category budget
-                  <br />
-                </>
-              )}
-            </span>
-          ) : (
-            <>
-              {" "}
-              total expenses {totalTasksPrice} kr. <br />
-            </>
-          )}
-          
-          {Math.round(categoryPercentageBudget)}% of used total budget
         </p>
       )}
 

@@ -2,7 +2,7 @@ import { useDraggable } from '@dnd-kit/core'
 import CategoryColumn from './CategoryColumn'
 import styles from './CategoryColumn.module.css'
 
-function DraggableCategory({ category, onEdit, onDelete, onAddTask, onEditTask, onDeleteTask, onChangeStatus, totalPrice }) {
+function DraggableCategory({ category, onEdit, onDelete, onAddTask, onEditTask, onDeleteTask, onChangeStatus }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: category.id,
     })
@@ -32,7 +32,6 @@ function DraggableCategory({ category, onEdit, onDelete, onAddTask, onEditTask, 
                 onEditTask={onEditTask}
                 onDeleteTask={onDeleteTask}
                 onChangeStatus={onChangeStatus}
-                totalPrice={totalPrice}
             />
         </div>
     )
