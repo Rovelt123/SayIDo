@@ -102,7 +102,15 @@ public class CategoryService {
         if (!category.getWedding().getId().equals(weddingId)) {
             throw new ApiException(404, Notifications.CATEGORY_NOT_FOUND.getDisplayName());
         }
-        category.setCategoryBudget(parseBudget(value));
+
+        double categoryBudget = parseBudget(value);
+
+        if (categoryBudget > category.getWedding().getBudget()) {
+        throw new ApiException(400, Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+        }
+
+        category.setCategoryBudget(categoryBudget);
+
         return categoryDAO.update(category);
     }
 
