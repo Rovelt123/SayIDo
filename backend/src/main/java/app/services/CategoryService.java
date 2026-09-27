@@ -80,6 +80,11 @@ public class CategoryService {
             categoryBudget = parseBudget(body.get("categoryBudget"));
         }
         category.setTitle(title);
+
+        if (categoryBudget > category.getWedding().getBudget()) {
+            throw new ApiException(400, Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+        }
+
         category.setCategoryBudget(categoryBudget);
         return categoryDAO.update(category);
     }
