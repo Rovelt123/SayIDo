@@ -63,6 +63,10 @@ public class CategoryMapper implements IMapper<Category, CategoryDTO> {
             )
             .totalTasksPrice(BudgetService.totalSpentCategory(entity))
             .categoryBudget(entity.getCategoryBudget())
+            .remainingBudget(BudgetService.remainingCategoryBudget(entity))
+            .budgetUsedPercent(BudgetService.categoryBudgetUsedPercent(entity))
+            .budgetOverrun(BudgetService.categoryBudgetOverrun(entity))
+            .percentageOfTotalSpent(BudgetService.percentageOfTotalSpent(entity))
             .build();
     }
 }

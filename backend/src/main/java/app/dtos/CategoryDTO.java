@@ -22,6 +22,10 @@ public class CategoryDTO {
     private double totalEstimatedHours;
     private double categoryBudget;
     private double totalTasksPrice;
+    private double remainingBudget;
+    private double budgetUsedPercent;
+    private double budgetOverrun;
+    private double percentageOfTotalSpent;
 
     @Builder.Default
     private Set<TaskDTO> tasks = new HashSet<>();

@@ -4,9 +4,7 @@ import app.controllers.generic.BaseController;
 import app.daos.TaskDAO;
 import app.daos.CategoryDAO;
 import app.dtos.TaskDTO;
-import app.dtos.WeddingDTO;
 import app.entities.Task;
-import app.entities.Wedding;
 import app.enums.Notifications;
 import app.enums.Role;
 import app.mappers.TaskMapper;
@@ -70,19 +68,18 @@ public class TaskController extends BaseController<Task, TaskDTO> {
 
     // ________________________________________________________
 
-    //TODO: Skal have sat wedding ID på også - Denne henter jo kun task pr. id?
     public void getMyTaskByID(Context ctx) {
-        Map<String, String> body = ErrorHandler.tryBodyMap(ctx, Notifications.BODY_EMPTY.getDisplayName());
-        UUID taskId = ErrorHandler.tryParseUUID(body.get("task_id"), Notifications.TASK_ID_INVALID.getDisplayName());
+        UUID taskId = ErrorHandler.tryParseUUID(ctx.pathParam("id"), Notifications.TASK_ID_INVALID.getDisplayName());
 
-        Task task = taskDAO.getByIdAndOwnerId(taskId, userService.getOwnerId(ctx));
+        Task task = ErrorHandler.tryEntity(taskDAO.getByIdAndOwnerId(taskId, userService.getOwnerId(ctx)),
+                Notifications.TASK_NOT_FOUND.getDisplayName());
         TaskDTO taskDTO = taskMapper.toDTO(task);
-        respond(ctx, 200, messageService.buildMessage(Notifications.GET_BY_ID, "task", body.get("task_id")), Map.of("data", taskDTO));
+        respond(ctx, 200, messageService.buildMessage(Notifications.GET_BY_ID, "task", taskId.toString()), Map.of("data", taskDTO));
     }
 
     // ________________________________________________________
 
-    //TODO: Skal have sat wedding ID på også - Denne henter jo kun task pr. id?
+
     public void getAllTasks(Context ctx) {
 
         UUID categoryId = ErrorHandler.tryParseUUID(ctx.pathParam("categoryId"), Notifications.CATEGORY_ID_INVALID.getDisplayName());

@@ -3,6 +3,7 @@ import Landingpage from "./pages/landingpage/Landingpage";
 import LoginPage from "./pages/login/LoginPage";
 import RegisterPage from "./pages/register/RegisterPage";
 import HomePage from "./pages/homepage/HomePage";
+import BudgetOverviewPage from "./pages/budgetoverview/BudgetOverviewPage";
 import PrivacyPolicyPage from "./pages/privacy/PrivacyPolicyPage";
 import NotFoundPage from "./pages/notfound/NotFoundPage";
 import CreateWeddingPage from "./pages/createwedding/CreateWeddingPage";
@@ -42,6 +43,9 @@ function App() {
         }
       />
       <Route path="*" element={<NotFoundPage />} />
+      <Route path="/budget" element={
+        <RequireToken><BudgetOverviewPage /></RequireToken>
+      } />
     </Routes>
   )
 }

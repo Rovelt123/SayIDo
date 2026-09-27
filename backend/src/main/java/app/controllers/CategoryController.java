@@ -4,9 +4,9 @@ import app.controllers.generic.BaseController;
 import app.daos.CategoryDAO;
 import app.daos.WeddingDAO;
 import app.dtos.CategoryDTO;
-import app.dtos.TaskDTO;
+import app.dtos.CategoryBudgetDTO;
+import app.exceptions.ApiException;
 import app.entities.Category;
-import app.entities.Task;
 import app.enums.Notifications;
 import app.enums.Role;
 import app.mappers.CategoryMapper;
@@ -49,6 +49,7 @@ public class CategoryController extends BaseController<Category, CategoryDTO> {
             post("/weddings/{weddingId}/categories", controller::createCategory, Role.USER);
             put("/categories/{id}", controller::updateCategory, Role.USER);
             patch("/categories/{id}/position", controller::moveCategory, Role.USER);
+            patch("/weddings/{weddingId}/categories/{id}/budget", controller::updateBudget, Role.USER);
             delete("/categories/{id}", controller::deleteCategory, Role.USER);
         };
     }
@@ -69,19 +70,17 @@ public class CategoryController extends BaseController<Category, CategoryDTO> {
 
     // ________________________________________________________
 
-    //TODO: Skal have sat wedding ID på også - Denne henter jo kun task pr. id?
     public void getMyCategoryByID(Context ctx) {
-        Map<String, String> body = ErrorHandler.tryBodyMap(ctx, Notifications.BODY_EMPTY.getDisplayName());
-        UUID categoryId = ErrorHandler.tryParseUUID(body.get("category_id"), Notifications.CATEGORY_ID_INVALID.getDisplayName());
+        UUID categoryId = ErrorHandler.tryParseUUID(ctx.pathParam("id"), Notifications.CATEGORY_ID_INVALID.getDisplayName());
 
-        Category category = categoryDAO.getByIdAndOwnerId(categoryId, userService.getOwnerId(ctx));
+        Category category = ErrorHandler.tryEntity(categoryDAO.getByIdAndOwnerId(categoryId, userService.getOwnerId(ctx)),
+                Notifications.CATEGORY_NOT_FOUND.getDisplayName());
         CategoryDTO categoryDTO = categoryMapper.toDTO(category);
-        respond(ctx, 200, messageService.buildMessage(Notifications.GET_BY_ID, "category", body.get("category_id")), Map.of("data", categoryDTO));
+        respond(ctx, 200, messageService.buildMessage(Notifications.GET_BY_ID, "category", categoryId.toString()), Map.of("data", categoryDTO));
     }
 
     // ________________________________________________________
 
-    //TODO: Skal have sat wedding ID på også - Denne henter jo kun task pr. id?
     public void getAllCategories(Context ctx) {
 
         UUID weddingId = ErrorHandler.tryParseUUID(ctx.pathParam("weddingId"), Notifications.WEDDING_ID_INVALID.getDisplayName());
@@ -134,6 +133,21 @@ public class CategoryController extends BaseController<Category, CategoryDTO> {
         UUID id = ErrorHandler.tryParseUUID(ctx.pathParam("id"), Notifications.CATEGORY_ID_INVALID.getDisplayName());
 
         Category category = categoryService.moveCategory(id, userService.getOwnerId(ctx), ctx);
+        respond(ctx, 200, Notifications.CATEGORY_UPDATED.getDisplayName(), Map.of("data", categoryMapper.toDTO(category)));
+    }
+
+    // ________________________________________________________
+
+    public void updateBudget(Context ctx) {
+        UUID weddingId = ErrorHandler.tryParseUUID(ctx.pathParam("weddingId"), Notifications.WEDDING_ID_INVALID.getDisplayName());
+        UUID id = ErrorHandler.tryParseUUID(ctx.pathParam("id"), Notifications.CATEGORY_ID_INVALID.getDisplayName());
+
+        CategoryBudgetDTO body = ErrorHandler.tryBody(ctx, CategoryBudgetDTO.class,
+                Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+        if (body == null) {
+            throw new ApiException(400, Notifications.BODY_EMPTY.getDisplayName());
+        }
+        Category category = categoryService.updateBudget(weddingId, id, userService.getOwnerId(ctx), body.getCategoryBudget());
         respond(ctx, 200, Notifications.CATEGORY_UPDATED.getDisplayName(), Map.of("data", categoryMapper.toDTO(category)));
     }
 }
