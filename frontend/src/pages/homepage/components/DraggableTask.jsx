@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import styles from './CategoryColumn.module.css'
+import { formatMoney } from '../../../js/format'
 
 function DraggableTask({ task, onEditTask, onDeleteTask, onChangeStatus }) {
   const {
@@ -62,7 +63,7 @@ function DraggableTask({ task, onEditTask, onDeleteTask, onChangeStatus }) {
         {task.price > 0 && (
           <span className={styles.metaRow}>
             <span className={styles.metaLabel}>Price:</span>
-            <span className={styles.metaValue}>{task.price.toLocaleString('en-US')} kr.</span>
+            <span className={styles.metaValue}>{formatMoney(task.price)}</span>
           </span>
         )}
 
