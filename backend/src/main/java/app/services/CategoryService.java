@@ -52,6 +52,11 @@ public class CategoryService {
         }
 
         Wedding wedding = ErrorHandler.tryEntity(weddingDAO.getByIdAndOwnerId(weddingId, ownerId), Notifications.WEDDING_NOT_FOUND.getDisplayName());
+
+        if(categoryBudget > wedding.getBudget()){
+            throw new ApiException(400, Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+        }
+
         int position = wedding.getCategories().stream().mapToInt(Category::getPosition).max().orElse(-1) + 1;
         Category category = Category.builder().title(title).position(position).categoryBudget(categoryBudget).build();
         wedding.addCategory(category);
@@ -102,7 +107,15 @@ public class CategoryService {
         if (!category.getWedding().getId().equals(weddingId)) {
             throw new ApiException(404, Notifications.CATEGORY_NOT_FOUND.getDisplayName());
         }
-        category.setCategoryBudget(parseBudget(value));
+
+        double categoryBudget = parseBudget(value);
+
+        if (categoryBudget > category.getWedding().getBudget()) {
+        throw new ApiException(400, Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+        }
+
+        category.setCategoryBudget(categoryBudget);
+
         return categoryDAO.update(category);
     }
 
