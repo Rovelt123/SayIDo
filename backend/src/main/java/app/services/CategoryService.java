@@ -52,6 +52,11 @@ public class CategoryService {
         }
 
         Wedding wedding = ErrorHandler.tryEntity(weddingDAO.getByIdAndOwnerId(weddingId, ownerId), Notifications.WEDDING_NOT_FOUND.getDisplayName());
+
+        if(categoryBudget > wedding.getBudget()){
+            throw new ApiException(400, Notifications.CATEGORY_BUDGET_INVALID.getDisplayName());
+        }
+
         int position = wedding.getCategories().stream().mapToInt(Category::getPosition).max().orElse(-1) + 1;
         Category category = Category.builder().title(title).position(position).categoryBudget(categoryBudget).build();
         wedding.addCategory(category);
