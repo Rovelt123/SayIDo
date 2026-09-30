@@ -1104,9 +1104,20 @@ function HomePage() {
                   </span>
                 </div>
               </div>
-              <Link className={styles.createWedding} to="/budget">
-                Budget Overview
-              </Link>
+              <div className={styles.containerOverviewCategory}>
+                <Link className={styles.createWedding} to="/budget">
+                  Budget Overview
+                </Link>
+
+              {wedding && (
+                <button
+                  className={styles.createCategory}
+                  onClick={() => setShowCreateCategory(true)}
+                >
+                  + New category
+                </button>
+              )}
+              </div>
             </section>
           </>
         )}
@@ -1127,14 +1138,7 @@ function HomePage() {
               />
             ))}
 
-            {wedding && (
-              <button
-                className={styles.addCategoryColumn}
-                onClick={() => setShowCreateCategory(true)}
-              >
-                + New category
-              </button>
-            )}
+            
           </div>
         </DndContext>
       </main>

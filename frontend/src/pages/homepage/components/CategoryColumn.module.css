@@ -1,7 +1,10 @@
 .container {
   min-width: 380px;
-  min-height: 9rem;
+  height: 27rem;
   padding: 0.75rem;
+
+  display:flex;
+  flex-direction: column;
 
   background: var(--bg-whiter);
   border: 1.5px solid var(--line-soft);
@@ -61,7 +64,7 @@
   width: 7rem;
   height: 2rem;
   padding-left: 0.3rem;
-  margin-top: 0.5rem;
+  margin-top: auto;
   text-align: left;
 
   cursor: pointer;
@@ -79,7 +82,7 @@
 }
 
 .empty {
-  margin: 0.75rem 0 0;
+  margin: 0.75rem 0.5rem 0;
 
   color: var(--ink-soft);
   font-family: "Cormorant Garamond", Georgia, serif;
@@ -93,8 +96,11 @@
   gap: 0.5rem;
 
   list-style: none;
-  margin: 0.75rem 0 0;
+  margin: 0.75rem 0 0.6rem;
   padding: 0;
+
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .task {
@@ -103,6 +109,8 @@
   gap: 0.375rem;
 
   padding: 0.75rem 0.875rem;
+  margin-right: 0.75rem;
+  
 
   background: var(--surface);
   border: 1px solid var(--line);

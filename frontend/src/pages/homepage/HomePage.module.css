@@ -82,6 +82,29 @@
   border-color: var(--accent-ink);
 }
 
+.containerOverviewCategory{
+  display: flex;
+  gap: 1rem;
+
+}
+
+.createCategory{
+  min-height: 2.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.createCategory:hover {
+  color: var(--accent-ink);
+  border-color: var(--accent-ink);
+}
+
 .deleteWedding {
   min-height: 2.25rem;
   padding: 0.5rem 1rem;
@@ -100,6 +123,7 @@
 
 .content {
   flex: 1;
+  position: relative;
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
@@ -536,6 +560,7 @@
       #eee6d9 50%,
       #d8c9b5 100%
     );
+    overflow-x: hidden;
 }
 
 .emptyTitle {
@@ -558,7 +583,8 @@
 
 .createWedding,
 .deleteWedding,
-.logout {
+.logout,
+.createCategory {
     font-size: 0.625rem;
     font-weight: 700;
     letter-spacing: 0.09375rem;
@@ -577,8 +603,8 @@
 .decorationLeft {
   position: absolute;
   right: -50rem;
-  top: 25%;
-  width: 87rem;
+  top: 15%;
+  width: 87grem;
   z-index: 0;
   opacity: 0.07;
 
