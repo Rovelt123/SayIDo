@@ -27,7 +27,7 @@ function DraggableTask({ task, onEditTask, onDeleteTask, onChangeStatus }) {
         </span>
 
         
-              <select className={styles.statusSelect} id="edit-task-status" name="status" value={task.status} onPointerDown={(e) => e.stopPropagation()} onChange={(e) => onChangeStatus(task, e.target.value)}>
+              <select className={`${styles.statusSelect} ${styles[task.status]}`} id="edit-task-status" name="status" value={task.status} onPointerDown={(e) => e.stopPropagation()} onChange={(e) => onChangeStatus(task, e.target.value)}>
                 <option value="TODO">To-do</option>
                 <option value="IN_PROGRESS">In progress</option>
                 <option value="DONE">Done</option>
@@ -40,7 +40,7 @@ function DraggableTask({ task, onEditTask, onDeleteTask, onChangeStatus }) {
             onClick={() => onEditTask(task)}
             aria-label={`Edit ${task.title}`}
           >
-            ✎
+            <i className="fa-solid fa-pen"></i>
           </button>
 
           <button
@@ -49,7 +49,7 @@ function DraggableTask({ task, onEditTask, onDeleteTask, onChangeStatus }) {
             onClick={() => onDeleteTask(task)}
             aria-label={`Delete ${task.title}`}
           >
-            ×
+            <i className="fa-solid fa-trash"></i>
           </button>
         </span>
       </span>
