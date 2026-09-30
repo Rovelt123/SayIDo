@@ -15,14 +15,7 @@ function DraggableCategory({ category, onEdit, onDelete, onAddTask, onEditTask, 
 
     return (
         <div ref={setNodeRef} style={style} className={styles.draggableCategory}>
-            <button
-                className={styles.moveHandle}
-                aria-label={`Move ${category.title}`}
-                {...listeners}
-                {...attributes}
-            >
-                ↔
-            </button>
+            
 
             <CategoryColumn
                 category={category}
@@ -32,6 +25,14 @@ function DraggableCategory({ category, onEdit, onDelete, onAddTask, onEditTask, 
                 onEditTask={onEditTask}
                 onDeleteTask={onDeleteTask}
                 onChangeStatus={onChangeStatus}
+                dragHandle={<button
+                className={styles.moveHandle}
+                aria-label={`Move ${category.title}`}
+                {...listeners}
+                {...attributes}
+            >
+                <i className="fa-solid fa-grip-vertical"></i>
+            </button>}
             />
         </div>
     )

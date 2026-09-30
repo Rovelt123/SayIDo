@@ -1,10 +1,12 @@
 :root {
   --accent: #8a7a63;
   --bg: #f3eee5;
+  --bg-whiter: #faf7f2;
   --surface: #ffffff;
   --ink: #2b2a26;
   --ink-soft: #6f6a60;
   --line: #cec2ae;
+  --line-soft: #ddd5c6;
   --accent-soft: #ece5d8;
   --accent-ink: #6d5f4b;
 
