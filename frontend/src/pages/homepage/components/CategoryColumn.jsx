@@ -5,6 +5,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useState, useEffect, useRef } from "react";
 
 function CategoryColumn({
   category,
@@ -14,6 +15,7 @@ function CategoryColumn({
   onEditTask,
   onDeleteTask,
   onChangeStatus,
+  dragHandle,
 }) {
   const isUncategorized = category.title === "Uncategorized";
 
@@ -26,6 +28,8 @@ function CategoryColumn({
     0,
   );
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const totalTasksPrice = tasks.reduce(
     (sum, task) => sum + (task.price ?? 0),
     0,
@@ -37,58 +41,84 @@ function CategoryColumn({
 
   const { setNodeRef, isOver } = useDroppable({ id: category.id });
 
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+  function handleClickOutside(event) {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(event.target)
+    ) {
+      setMenuOpen(false);
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
   return (
     <div
       className={`${styles.container} ${isOver ? styles.dragOver : ""}`}
       ref={setNodeRef}
     >
-      {aboveBudget && (
+      
+      <div className={styles.header}>
+        <div className={styles.actionsContainer}>
+          {dragHandle}
+        <h3 className={styles.smallTitle}>{category.title}</h3>
+        </div>
+        
+
+        <div className={styles.actionsContainer}>
+
+          {tasks.length > 0 && (
+              <p className={styles.taskNumber}>
+                {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+               
+              </p>
+          )}
+          {totalHours > 0 && (
+              <p className={styles.taskNumber}>
+                {totalHours}h
+              </p>
+          )}
+
+          
+
+          {!isUncategorized && (
+            <div className={styles.menuWrapper} ref={menuRef}>
+              <button className={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)} aria-label={`Options for ${category.title}`}>
+              ⋯
+              </button>
+              {menuOpen && (
+                <div className={styles.categoryMenu}>
+                  <button onClick={() => {onEdit(category), setMenuOpen(false)}}>
+                    <i className="fa-solid fa-pen"></i>
+                    Edit category
+                  </button>
+                  <button className={styles.deleteMenuItem} onClick={() =>{onDelete(category), setMenuOpen(false)}}>
+                    <i className="fa-solid fa-trash"></i>
+                    Delete category
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        
+      </div>
+
+    {aboveBudget && (
 
         <span className={styles.aboveBudget}>
           <i className="fa-solid fa-triangle-exclamation"/>{" "}
           over budget
         </span>
 
-      )}
-      <div className={styles.header}>
-        <h3 className={styles.smallTitle}>{category.title}</h3>
-
-        <div className={styles.actionsContainer}>
-          <button
-            className={styles.iconButton}
-            onClick={() => onAddTask(category)}
-            aria-label={`Add task to ${category.title}`}
-          >
-            +
-          </button>
-
-          {!isUncategorized && (
-            <>
-              <button
-                className={styles.iconButton}
-                onClick={() => onEdit(category)}
-                aria-label={`Edit ${category.title}`}
-              >
-                ✎
-              </button>
-
-              <button
-                className={styles.iconButton}
-                onClick={() => onDelete(category)}
-                aria-label={`Delete ${category.title}`}
-              >
-                ×
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {tasks.length > 0 && (
-        <p className={styles.columnTotals}>
-          {tasks.length} {tasks.length === 1 ? "task" : "tasks"},
-          {Math.round(totalHours * 10) / 10} h,
-        </p>
       )}
 
       {tasks.length === 0 && <p className={styles.empty}>No tasks yet</p>}
@@ -109,6 +139,9 @@ function CategoryColumn({
           ))}
         </ul>
       </SortableContext>
+      <button className={styles.addTaskButton} onClick={() => onAddTask(category)} aria-label={`Add task to ${category.title}`}>
+            + Add task
+      </button>
     </div>
   );
 }

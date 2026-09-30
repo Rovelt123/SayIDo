@@ -999,6 +999,10 @@ function HomePage() {
       </div>
 
       <main className={styles.content}>
+        <img className={`${styles.decoration} ${styles.decorationLeft}`} src="/pine.png" alt=""/>
+
+        <img className={`${styles.decoration} ${styles.decorationRight}`} src="/pineTwo.png" alt=""/>
+
         <p className={styles.eyebrow}>Your planning</p>
         <h1 className={styles.heading}>
           {name ? `Welcome back, ${name}` : "Welcome back"}
@@ -1100,9 +1104,20 @@ function HomePage() {
                   </span>
                 </div>
               </div>
-              <Link className={styles.createWedding} to="/budget">
-                Budget Overview
-              </Link>
+              <div className={styles.containerOverviewCategory}>
+                <Link className={styles.createWedding} to="/budget">
+                  Budget Overview
+                </Link>
+
+              {wedding && (
+                <button
+                  className={styles.createCategory}
+                  onClick={() => setShowCreateCategory(true)}
+                >
+                  + New category
+                </button>
+              )}
+              </div>
             </section>
           </>
         )}
@@ -1123,14 +1138,7 @@ function HomePage() {
               />
             ))}
 
-            {wedding && (
-              <button
-                className={styles.addCategoryColumn}
-                onClick={() => setShowCreateCategory(true)}
-              >
-                + New category
-              </button>
-            )}
+            
           </div>
         </DndContext>
       </main>
