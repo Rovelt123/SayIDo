@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PasswordServiceTest {
 
-    @ParameterizedTest(name = "[{index}] {3}")
+    @ParameterizedTest(name = "[{index}] {4} - {3}")
     @CsvFileSource(resources = "/password-test-cases.csv", numLinesToSkip = 1)
-    void passwordValidationFollowsTheTestCaseTable(String password, boolean accepted, String message, String reason) {
+    void passwordValidationFollowsTheTestCaseTable(String password, boolean accepted, String message, String reason, String story) {
 
         if (accepted) {
             assertDoesNotThrow(() -> PasswordService.passwordValidation(password));

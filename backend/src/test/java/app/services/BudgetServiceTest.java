@@ -59,9 +59,9 @@ public class BudgetServiceTest {
 
     // ________________________________________________________
 
-    @ParameterizedTest(name = "[{index}] {6}")
+    @ParameterizedTest(name = "[{index}] {7} - {6}")
     @CsvFileSource(resources = "/budget-test-cases.csv", numLinesToSkip = 1)
-    void budgetCalculationsFollowTheTestCaseTable(float budget, String categories, double totalSpent, double remaining, double usedPercent, double overrun, String reason) {
+    void budgetCalculationsFollowTheTestCaseTable(float budget, String categories, double totalSpent, double remaining, double usedPercent, double overrun, String reason, String story) {
 
         Wedding wedding = weddingFrom(budget, categories);
 
