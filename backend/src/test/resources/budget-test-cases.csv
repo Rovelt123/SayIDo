@@ -1,0 +1,12 @@
+budget,categories,totalSpent,remaining,usedPercent,overrun,reason
+10000,1000|2500.5,3500.5,6499.5,35.005,0,Several tasks in one category are summed
+10000,1000|2000;3000|500,6500,3500,65,0,Tasks are summed across several categories
+10000,"",0,10000,0,0,A category without tasks contributes nothing
+10000,-,0,10000,0,0,A wedding without categories has spent nothing
+2000,500,500,1500,25,0,A quarter of the budget is spent
+1000,999.5,999.5,0.5,99.95,0,Just below the budget boundary
+1000,1000,1000,0,100,0,Exactly at the budget boundary
+1000,1000.5,1000.5,-0.5,100.05,0.5,Just above the budget boundary
+1000,1500,1500,-500,150,500,Clearly above the budget
+0,500,500,-500,0,500,Spending when the budget is zero
+0,"",0,0,0,0,No budget and no tasks
