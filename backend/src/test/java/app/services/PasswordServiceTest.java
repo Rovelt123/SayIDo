@@ -1,48 +1,27 @@
 package app.services;
 
 import app.exceptions.ApiException;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PasswordServiceTest {
 
-    @Test
-    void validPasswordShouldNotThrowApiException() {
-        assertDoesNotThrow(() ->
-                PasswordService.passwordValidation("Password1!")
-        );
-    }
+    @ParameterizedTest(name = "[{index}] {3}")
+    @CsvFileSource(resources = "/password-test-cases.csv", numLinesToSkip = 1)
+    void passwordValidationFollowsTheTestCaseTable(String password, boolean accepted, String message, String reason) {
 
-    @Test
-    void passwordTooShortShouldThrowApiException() {
-        assertThrows(
-                ApiException.class,
-                () -> PasswordService.passwordValidation("Ab1!")
-        );
-    }
+        if (accepted) {
+            assertDoesNotThrow(() -> PasswordService.passwordValidation(password));
+            return;
+        }
 
-    @Test
-    void passwordWithoutUppercaseShouldThrowApiException() {
-        assertThrows(
+        ApiException exception = assertThrows(
                 ApiException.class,
-                () -> PasswordService.passwordValidation("password1!")
+                () -> PasswordService.passwordValidation(password)
         );
-    }
 
-    @Test
-    void passwordWithoutLowercaseShouldThrowApiException() {
-        assertThrows(
-                ApiException.class,
-                () -> PasswordService.passwordValidation("PASSWORD1!")
-        );
-    }
-
-    @Test
-    void passwordWithoutSpecialCharacterShouldThrowApiException() {
-        assertThrows(
-                ApiException.class,
-                () -> PasswordService.passwordValidation("Password123")
-        );
+        assertEquals(message, exception.getMessage());
     }
 }
