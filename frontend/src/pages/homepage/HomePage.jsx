@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import styles from "./HomePage.module.css";
+import dragStyles from "./components/CategoryColumn.module.css";
 import CategoryColumn from "./components/CategoryColumn.jsx";
 import DraggableCategory from "./components/DraggableCategory.jsx";
 import { getToken, getUser, clearSession } from "../../utils/storage";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { API_BASE } from "../../utils/api";
 import { formatMoney } from "../../js/format";
 
@@ -155,6 +156,8 @@ function HomePage() {
 
   const days = wedding ? daysUntil(wedding.date) : 0;
   const today = new Date().toISOString().slice(0, 10);
+
+  const [activeTask, setActiveTask] = useState(null);
   // ________________________________________________________
 
   useEffect(() => {
@@ -233,6 +236,20 @@ function HomePage() {
   }, [wedding]);
 
   // ________________________________________________________
+
+  const handleDragStart = ({ active }) => {
+      for (const category of categories) {
+        const task = (category.tasks ?? []).find(
+          (task) => task.id === active.id
+        );
+
+        if (task) {
+          setActiveTask(task);
+          break;
+        }
+      }
+    };
+
   // ________________________________________________________
 
   const handleLogout = () => {
@@ -1123,7 +1140,7 @@ function HomePage() {
         )}
 
 
-        <DndContext onDragEnd={handleDragEnd}>
+        <DndContext onDragStart={handleDragStart} onDragEnd={(event) => {handleDragEnd(event); setActiveTask(null);}}>
           <div className={styles.categoryBoard}>
             {categories.map((category) => (
               <DraggableCategory
@@ -1137,9 +1154,41 @@ function HomePage() {
                 onChangeStatus={handleStatusTask}
               />
             ))}
-
-            
           </div>
+
+          <DragOverlay dropAnimation={null}>
+             {activeTask && (
+                <div className={styles.taskOverlay}>
+                  <div className={dragStyles.taskHeader}>
+                    <span className={dragStyles.taskTitle}>
+                      {activeTask.title}
+                    </span>
+
+                    <span className={dragStyles.statusSelect}>
+                      {activeTask.status}
+                    </span>
+                  </div>
+
+                  <div className={dragStyles.taskMeta}>
+                    <span className={dragStyles.metaRow}>
+                      <span className={dragStyles.metaLabel}>Priority:</span>
+                      <span className={dragStyles.metaValue}>
+                        {activeTask.priority}
+                      </span>
+                    </span>
+
+                    {activeTask.price > 0 && (
+                      <span className={dragStyles.metaRow}>
+                        <span className={dragStyles.metaLabel}>Price:</span>
+                        <span className={dragStyles.metaValue}>
+                          {formatMoney(activeTask.price)}
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+          </DragOverlay>
         </DndContext>
       </main>
 
