@@ -1,5 +1,6 @@
 .container {
-  min-width: 380px;
+  min-width: 0;
+  width: 100%;
   height: 27rem;
   padding: 0.75rem;
 
@@ -69,7 +70,7 @@
 
   cursor: pointer;
   border: none;
-  background-color: transparent;
+  background-color: var(--bg);
 
   font-size: 1rem;
   color: var(--ink-soft)
@@ -118,7 +119,7 @@
   border: 1px solid var(--line);
   border-radius: 0.75rem;
 
-  cursor: grab;
+  cursor: pointer;
 }
 
 .task:hover {
@@ -250,7 +251,7 @@
   padding: 0.1rem 1.3rem 0.1rem 0.3rem;
 
   font-family: inherit;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
 
   cursor: pointer;
 
@@ -273,17 +274,17 @@
 
 .statusSelect.TODO {
   color: var(--ink);
-  background-color: transparent;
+  background-color: var(--bg);
 }
 
 .statusSelect.IN_PROGRESS {
   color: var(--ink);
-  background-color: #ffd7357a;
+  background-color: #eee3bc;
 }
 
 .statusSelect.DONE {
   color: var(--ink);
-  background-color: #abccb2;
+  background-color: #d7e5d9;
 }
 
 .menuWrapper {
@@ -343,4 +344,24 @@
 
 .deleteMenuItem {
   color: #b42318;
+}
+
+button.taskTitle {
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.taskTitle:focus-visible { 
+  outline: 2px solid var(--accent-ink); 
+  outline-offset: 3px; 
+}
+
+.task .moveHandle { 
+  flex-shrink: 0;
+  touch-action: none; 
 }
