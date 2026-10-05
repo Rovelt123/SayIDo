@@ -1,3 +1,4 @@
+import { visibleTasks } from "../../../js/taskView";
 import styles from "./CategoryColumn.module.css";
 import DraggableTask from "./DraggableTask";
 import { useDroppable } from "@dnd-kit/core";
@@ -16,12 +17,17 @@ function CategoryColumn({
   onDeleteTask,
   onChangeStatus,
   dragHandle,
+  taskSort,
+  taskStatuses,
+  onViewTask,
 }) {
   const isUncategorized = category.title === "Uncategorized";
 
   const tasks = [...(category.tasks ?? [])].sort(
     (a, b) => a.position - b.position,
   );
+
+  const displayedTasks = visibleTasks(tasks, taskStatuses, taskSort);
 
   const totalHours = tasks.reduce(
     (sum, task) => sum + (task.estimatedHours ?? 0),
@@ -121,20 +127,21 @@ function CategoryColumn({
 
       )}
 
-      {tasks.length === 0 && <p className={styles.empty}>No tasks yet</p>}
+      {displayedTasks.length === 0 && <p className={styles.empty}>{tasks.length === 0 ? "No tasks yet" : "No tasks match the selected statuses."}</p>}
 
       <SortableContext
-        items={tasks.map((task) => task.id)}
+        items={displayedTasks.map((task) => task.id)}
         strategy={verticalListSortingStrategy}
       >
         <ul className={styles.taskList}>
-          {tasks.map((task) => (
+          {displayedTasks.map((task) => (
             <DraggableTask
               key={task.id}
               task={task}
               onEditTask={onEditTask}
               onDeleteTask={onDeleteTask}
               onChangeStatus={onChangeStatus}
+              onViewTask={onViewTask}
             />
           ))}
         </ul>

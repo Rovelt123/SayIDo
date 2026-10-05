@@ -2,7 +2,7 @@ import { useDraggable } from '@dnd-kit/core'
 import CategoryColumn from './CategoryColumn'
 import styles from './CategoryColumn.module.css'
 
-function DraggableCategory({ category, onEdit, onDelete, onAddTask, onEditTask, onDeleteTask, onChangeStatus }) {
+function DraggableCategory({ category, onEdit, onDelete, onAddTask, onEditTask, onDeleteTask, onChangeStatus, taskSort, taskStatuses, onViewTask }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: category.id,
     })
@@ -25,6 +25,9 @@ function DraggableCategory({ category, onEdit, onDelete, onAddTask, onEditTask, 
                 onEditTask={onEditTask}
                 onDeleteTask={onDeleteTask}
                 onChangeStatus={onChangeStatus}
+                taskSort={taskSort}
+                taskStatuses={taskStatuses}
+                onViewTask={onViewTask}
                 dragHandle={<button
                 className={styles.moveHandle}
                 aria-label={`Move ${category.title}`}
