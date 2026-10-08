@@ -22,7 +22,7 @@ testServerSetup.initialize();
 
 // ________________________________________________________
 
-@AfterAll
+@AfterEach
     void  stopServer(){
     testServerSetup.endSession();
 }
