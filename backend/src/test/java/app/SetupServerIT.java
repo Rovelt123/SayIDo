@@ -24,6 +24,6 @@ testServerSetup.initialize();
 
 @AfterEach
     void  stopServer(){
-    testServerSetup.endSession();
+    testServerSetup.getApp().stop();
 }
 }
