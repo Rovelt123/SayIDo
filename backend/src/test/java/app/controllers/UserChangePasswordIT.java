@@ -178,5 +178,70 @@ public class UserChangePasswordIT extends SetupServerIT {
         assertTrue(changeResponse.body().contains("The password must contain a special character"));
 
     }
+
+    // ________________________________________________________
+
+    @Test
+    void changePasswordMissingNewPasswordReturns400() throws Exception{
+        //Arrange
+        String json = """
+                {
+                    "current_password": "Password123!",
+                    "new_password": "",
+                    "repeat_new_password": ""
+                }
+                """;
+
+        HttpRequest changePWRequest = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:9393/api/users/me/password"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .method(
+                        "PATCH",
+                        HttpRequest.BodyPublishers.ofString(json)
+                )
+                .build();
+
+//Act
+        HttpResponse<String> changeResponse = HttpClient.newHttpClient()
+                .send(changePWRequest, HttpResponse.BodyHandlers.ofString());
+
+// Assert
+        assertEquals(400, changeResponse.statusCode());
+        assertTrue(changeResponse.body().contains("You must enter a new password"));
+
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void changePasswordWithoutTokenReturns401() throws Exception{
+        //Arrange
+        String json = """
+                {
+                    "current_password": "Password123!",
+                    "new_password": "NewPassword123!",
+                    "repeat_new_password": "NewPassword123!"
+                }
+                """;
+
+        HttpRequest changePWRequest = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:9393/api/users/me/password"))
+                .header("Content-Type", "application/json")
+                .method(
+                        "PATCH",
+                        HttpRequest.BodyPublishers.ofString(json)
+                )
+                .build();
+
+//Act
+        HttpResponse<String> changeResponse = HttpClient.newHttpClient()
+                .send(changePWRequest, HttpResponse.BodyHandlers.ofString());
+
+// Assert
+        assertEquals(401, changeResponse.statusCode());
+        assertTrue(changeResponse.body().contains("Authorization header missing"));
+
+    }
 }
 
