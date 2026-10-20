@@ -628,3 +628,148 @@
 
   cursor: grabbing;
 }
+
+.taskControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+  font-size: 0.8125rem;
+}
+
+.content > .taskControls { z-index: 2; }
+
+.taskControls label {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sortControl { position: relative; }
+
+.sortButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.sortButton:hover,
+.sortButton[aria-expanded="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.sortButton:focus-visible,
+.sortOptions button:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+.sortOptions {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 10;
+  width: 17rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 0.6rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(43, 42, 38, 0.08);
+}
+
+.sortOptions button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sortOptions button:hover,
+.sortOptions button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.sortOptions i { width: 0.75rem; flex-shrink: 0; font-size: 0.625rem; }
+
+.statusOptions { width: 11rem; }
+
+.menuHeading {
+  margin: 0;
+  padding: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.09375rem;
+  text-transform: uppercase;
+}
+
+.statusOptions label {
+  display: flex;
+  width: 100%;
+  padding: 0.55rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.statusOptions label:hover,
+.statusOptions label:focus-within { background: var(--accent-soft); }
+.statusOptions input { margin: 0; }
+
+.filterCount {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 0.875rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-size: 0.5625rem;
+  font-weight: 700;
+}
+
+.taskControls input { accent-color: var(--accent-ink); }
+
+.taskDetails {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.taskDetails::backdrop { background: rgba(0, 0, 0, 0.4); }
+.taskDetails:not([open]) { display: none; }
+.taskDetails > button { align-self: flex-end; }
+.taskDescription { margin: 0; white-space: pre-wrap; }
+.taskFacts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.75rem 1rem; }
+.taskFacts dt { color: var(--ink-soft); }
+.taskFacts dd { margin: 0; }
+
+@media (max-width: 760px) {
+  .categoryBoard { grid-template-columns: minmax(0, 1fr); }
+  .content { padding-right: 1rem; padding-left: 1rem; }
+  .taskDetails { padding: 1.25rem; }
+}
