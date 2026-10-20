@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import styles from "./HomePage.module.css";
 import dragStyles from "./components/CategoryColumn.module.css";
-import CategoryColumn from "./components/CategoryColumn.jsx";
+import TaskDetails from "./components/TaskDetails.jsx";
+import { TASK_STATUSES, isTaskDone } from "../../js/taskView";
 import DraggableCategory from "./components/DraggableCategory.jsx";
 import { getToken, getUser, clearSession } from "../../utils/storage";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
@@ -82,6 +83,23 @@ function HomePage() {
   const [editingWedding, setEditingWedding] = useState(false);
 
   const [categories, setCategories] = useState([]);
+  const [taskSort, setTaskSort] = useState("manual");
+  const [showTaskSort, setShowTaskSort] = useState(false);
+  const taskSortRef = useRef(null);
+  const [showTaskStatus, setShowTaskStatus] = useState(false);
+  const taskStatusRef = useRef(null);
+
+  useEffect(() => {
+    if (!showTaskSort && !showTaskStatus) return;
+    const closeOutside = (event) => {
+      if (!taskSortRef.current?.contains(event.target)) setShowTaskSort(false);
+      if (!taskStatusRef.current?.contains(event.target)) setShowTaskStatus(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, [showTaskSort, showTaskStatus]);
+  const [taskStatuses, setTaskStatuses] = useState(Object.keys(TASK_STATUSES));
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const [editFormCategory, setEditFormCategory] = useState({
     title: "",
@@ -126,14 +144,14 @@ function HomePage() {
 
 
   const taskCount = categories.reduce(
-    (total, category) => total + (category.tasks?.length ?? 0),
+    (total, category) => total + (category.tasks ?? []).filter((task) => !isTaskDone(task)).length,
     0,
   );
 
   const completedTaskCount = categories.reduce(
     (total, category) =>
       total +
-      (category.tasks ?? []).filter((task) => task.status === "DONE").length,
+      (category.tasks ?? []).filter(isTaskDone).length,
     0,
   );
 
@@ -678,8 +696,8 @@ function HomePage() {
 
       const updatedTask = result.data.data;
 
-      setCategories(
-        categories.map((category) => ({
+      setCategories((currentCategories) =>
+        currentCategories.map((category) => ({
           ...category,
           tasks: (category.tasks ?? []).map((existing) =>
             existing.id === task.id ? updatedTask : existing,
@@ -1140,7 +1158,68 @@ function HomePage() {
         )}
 
 
-        <DndContext onDragStart={handleDragStart} onDragEnd={(event) => {handleDragEnd(event); setActiveTask(null);}}>
+        {wedding && (
+          <div className={styles.taskControls}>
+            <div ref={taskSortRef} className={styles.sortControl} onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) setShowTaskSort(false);
+            }} onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setShowTaskSort(false);
+                taskSortRef.current.querySelector("button").focus();
+              }
+            }}>
+              <button className={styles.sortButton} type="button" title="Sort tasks" aria-label="Sort tasks" aria-expanded={showTaskSort} aria-controls="task-sort-options" onClick={() => { setShowTaskSort((open) => !open); setShowTaskStatus(false); }}>
+                <i className="fa-solid fa-arrow-down-wide-short" aria-hidden="true" />
+              </button>
+              {showTaskSort && (
+                <div id="task-sort-options" className={styles.sortOptions} role="group" aria-label="Sort tasks">
+                  {[
+                    ["manual", "Manual order"],
+                    ["status", "Status: To-do → In progress → Done"],
+                    ["price-asc", "Price: lowest first"],
+                    ["price-desc", "Price: highest first"],
+                    ["priority-desc", "Priority: highest first"],
+                    ["priority-asc", "Priority: lowest first"],
+                  ].map(([value, label]) => (
+                    <button key={value} type="button" aria-pressed={taskSort === value} onClick={() => {
+                      setTaskSort(value);
+                      setShowTaskSort(false);
+                      taskSortRef.current.querySelector("button").focus();
+                    }}>
+                      <i className={`fa-solid ${taskSort === value ? "fa-check" : ""}`} aria-hidden="true" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div ref={taskStatusRef} className={styles.sortControl} onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) setShowTaskStatus(false);
+            }} onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setShowTaskStatus(false);
+                taskStatusRef.current.querySelector("button").focus();
+              }
+            }}>
+              <button className={styles.sortButton} type="button" title="Show status" aria-label={`Show status: ${taskStatuses.length} of 3 selected`} aria-expanded={showTaskStatus} aria-controls="task-status-options" onClick={() => { setShowTaskStatus((open) => !open); setShowTaskSort(false); }}>
+                <i className="fa-solid fa-filter" aria-hidden="true" />
+                {taskStatuses.length < 3 && <span className={styles.filterCount} aria-hidden="true">{taskStatuses.length}</span>}
+              </button>
+              {showTaskStatus && (
+                <div id="task-status-options" className={`${styles.sortOptions} ${styles.statusOptions}`} role="group" aria-label="Show status">
+                  <p className={styles.menuHeading}>Show status</p>
+                  {Object.entries(TASK_STATUSES).map(([status, label]) => (
+                    <label key={status}>
+                      <input type="checkbox" checked={taskStatuses.includes(status)} onChange={() => setTaskStatuses((current) => current.includes(status) ? current.filter((value) => value !== status) : [...current, status])} />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        <DndContext onDragStart={handleDragStart} onDragEnd={(event) => {handleDragEnd(event); setActiveTask(null);}} onDragCancel={() => setActiveTask(null)}>
           <div className={styles.categoryBoard}>
             {categories.map((category) => (
               <DraggableCategory
@@ -1152,6 +1231,9 @@ function HomePage() {
                 onEditTask={handleOpenEditTask}
                 onDeleteTask={handleOpenDeleteTask}
                 onChangeStatus={handleStatusTask}
+                taskSort={taskSort}
+                taskStatuses={taskStatuses}
+                onViewTask={(task) => setSelectedTask({ task, category })}
               />
             ))}
           </div>
@@ -1198,6 +1280,8 @@ function HomePage() {
           Privacy policy{" "}
         </Link>
       </footer>
+
+      {selectedTask && <TaskDetails task={selectedTask.task} category={selectedTask.category} onClose={() => setSelectedTask(null)} />}
 
       {showDeleteWarning && (
         <div className={styles.modalOverlay}>
