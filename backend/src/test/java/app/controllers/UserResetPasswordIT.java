@@ -103,7 +103,7 @@ public class UserResetPasswordIT extends SetupServerIT {
 
 // Assert
         assertEquals(400, resetResponse.statusCode());
-        assertTrue(resetResponse.body().contains("Authorization header missing"));
+        assertTrue(resetResponse.body().contains("Link is expired or invalid"));
 
     }
 
