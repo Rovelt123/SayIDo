@@ -16,7 +16,6 @@ import java.util.Date;
 
 public class JWTTokenGenerator {
 
-    private final static UserDAO userDAO = new UserDAO(Setup.em);
     private final static UserMapper mapper = new UserMapper();
 
     // ________________________________________________________
@@ -59,6 +58,6 @@ public class JWTTokenGenerator {
     public static UserDTO getUserFromToken(String token) throws ParseException {
         SignedJWT signedJWT = SignedJWT.parse(token);
         String email = signedJWT.getJWTClaimsSet().getStringClaim("email");
-        return mapper.toDTO(userDAO.getByEmail(email));
+        return mapper.toDTO(new UserDAO(Setup.em).getByEmail(email));
     }
 }
