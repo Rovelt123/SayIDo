@@ -4,19 +4,35 @@ import app.entities.Category;
 import app.entities.Task;
 import app.entities.Wedding;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BudgetServiceTest {
 
-    private Wedding weddingWith(float budget, float... prices) {
+    private Wedding weddingFrom(float budget, String categories) {
 
         Wedding wedding = Wedding.builder().budget(budget).build();
-        Category category = Category.builder().title("Venue").position(0).build();
-        wedding.addCategory(category);
 
-        for (float price : prices) {
-            category.addTask(Task.builder().title("Task").price(price).build());
+        if (categories.equals("-")) {
+            return wedding;
+        }
+
+        String[] groups = categories.split(";", -1);
+
+        for (int i = 0; i < groups.length; i++) {
+
+            Category category = Category.builder().title("Category " + (i + 1)).position(i).build();
+            wedding.addCategory(category);
+
+            if (groups[i].isEmpty()) {
+                continue;
+            }
+
+            for (String price : groups[i].split("\\|")) {
+                category.addTask(Task.builder().title("Task").price(Float.parseFloat(price)).build());
+            }
         }
         return wedding;
     }
@@ -43,58 +59,16 @@ public class BudgetServiceTest {
 
     // ________________________________________________________
 
-    @Test
-    void totalSpentSumsAllTaskPrices() {
-        assertEquals(3500.5, BudgetService.totalSpent(weddingWith(10000, 1000, 2500.5f)), 0.001);
-    }
+    @ParameterizedTest(name = "[{index}] {7} - {6}")
+    @CsvFileSource(resources = "/budget-test-cases.csv", numLinesToSkip = 1)
+    void budgetCalculationsFollowTheTestCaseTable(float budget, String categories, double totalSpent, double remaining, double usedPercent, double overrun, String reason, String story) {
 
-    // ________________________________________________________
+        Wedding wedding = weddingFrom(budget, categories);
 
-    @Test
-    void totalSpentIsZeroWhenThereAreNoTasks() {
-        assertEquals(0, BudgetService.totalSpent(weddingWith(10000)), 0.001);
-    }
-
-    // ________________________________________________________
-
-    @Test
-    void remainingBudgetIsBudgetMinusSpent() {
-        assertEquals(6500, BudgetService.remainingBudget(weddingWith(10000, 3500)), 0.001);
-    }
-
-    // ________________________________________________________
-
-    @Test
-    void remainingBudgetIsNegativeWhenSpendingExceedsBudget() {
-        assertEquals(-500, BudgetService.remainingBudget(weddingWith(1000, 1500)), 0.001);
-    }
-
-    // ________________________________________________________
-
-    @Test
-    void budgetUsedPercentIsTheShareOfTheBudgetSpent() {
-        assertEquals(25, BudgetService.budgetUsedPercent(weddingWith(2000, 500)), 0.001);
-    }
-
-    // ________________________________________________________
-
-    @Test
-    void budgetUsedPercentIsZeroWhenTheBudgetIsZero() {
-        assertEquals(0, BudgetService.budgetUsedPercent(weddingWith(0, 500)), 0.001);
-    }
-
-    // ________________________________________________________
-
-    @Test
-    void budgetOverrunIsZeroWhenSpendingIsWithinTheBudget() {
-        assertEquals(0, BudgetService.budgetOverrun(weddingWith(2000, 500)), 0.001);
-    }
-
-    // ________________________________________________________
-
-    @Test
-    void budgetOverrunIsTheAmountAboveTheBudget() {
-        assertEquals(500, BudgetService.budgetOverrun(weddingWith(1000, 1500)), 0.001);
+        assertEquals(totalSpent, BudgetService.totalSpent(wedding), 0.001);
+        assertEquals(remaining, BudgetService.remainingBudget(wedding), 0.001);
+        assertEquals(usedPercent, BudgetService.budgetUsedPercent(wedding), 0.001);
+        assertEquals(overrun, BudgetService.budgetOverrun(wedding), 0.001);
     }
 
 
