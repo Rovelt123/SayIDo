@@ -115,6 +115,14 @@
             <version>0.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.24.0</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -169,6 +177,14 @@
                         </goals>
                     </execution>
                 </executions>
+
+                <configuration>
+                    <excludes>
+                        <exclude>app/Main.class</exclude>
+                        <exclude>app/configs/**</exclude>
+                    </excludes>
+                </configuration>
+
             </plugin>
         </plugins>
     </build>
