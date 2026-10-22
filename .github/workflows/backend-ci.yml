@@ -68,7 +68,7 @@ jobs:
             docker compose up -d --no-deps --force-recreate sys2-api
             for attempt in $(seq 1 12); do
               echo "Checking backend health ($attempt/12)..."
-              if timeout 10s docker compose exec -T sys2-api wget -T 5 -qO- http://127.0.0.1:7070/api/health; then
+              if timeout 10s docker exec sys2-api wget -T 5 -qO- http://127.0.0.1:7070/api/health; then
                 echo "Backend is healthy."
                 exit 0
               fi
