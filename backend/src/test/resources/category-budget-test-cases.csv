@@ -1,0 +1,10 @@
+value,accepted,reason,story
+,false,A missing budget is rejected,US 14.0 Budget distribution by category
+abc,false,A budget that is not a number is rejected,US 14.0 Budget distribution by category
+Infinity,false,An infinite budget is rejected,US 14.0 Budget distribution by category
+-0.01,false,Just below zero is rejected,US 14.0 Budget distribution by category
+0,true,Zero is the lower boundary and is accepted,US 14.0 Budget distribution by category
+50,true,A budget within the wedding budget is accepted,US 14.0 Budget distribution by category
+100,true,Exactly the wedding budget is the upper boundary and is accepted,US 14.0 Budget distribution by category
+100.01,false,Just above the wedding budget is rejected,US 14.0 Budget distribution by category
+200,false,Clearly above the wedding budget is rejected,US 14.0 Budget distribution by category
