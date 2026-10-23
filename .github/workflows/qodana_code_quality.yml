@@ -5,6 +5,7 @@ on:
   push:
     branches: # Specify your branches here
       - Main
+      - Review
       - 'releases/*' # The release branches
 
 jobs:
