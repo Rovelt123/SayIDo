@@ -31,19 +31,8 @@ public class SmtpMailSender implements MailSender {
             throw new IllegalStateException("SMTP_USERNAME or SMTP_PASSWORD is not set.");
         }
 
-        Properties properties = new Properties();
-        properties.setProperty("mail.smtp.host", host);
-        properties.setProperty("mail.smtp.port", port);
-        properties.setProperty("mail.smtp.auth", "true");
-        properties.setProperty("mail.smtp.starttls.enable", "true");
-        properties.setProperty("mail.smtp.starttls.required", "true");
-        properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
-        properties.setProperty("mail.smtp.connectiontimeout", "10000");
-        properties.setProperty("mail.smtp.timeout", "20000");
-        properties.setProperty("mail.smtp.writetimeout", "20000");
-
         Session session = Session.getInstance(
-                properties,
+                createSmtpProperties(),
                 new Authenticator() {
 
                     @Override
@@ -69,5 +58,19 @@ public class SmtpMailSender implements MailSender {
         } catch (MessagingException e) {
             throw new RuntimeException("Could not send email via SMTP.", e);
         }
+    }
+
+    private Properties createSmtpProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("mail.smtp.host", host);
+        properties.setProperty("mail.smtp.port", port);
+        properties.setProperty("mail.smtp.auth", "true");
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+        properties.setProperty("mail.smtp.starttls.required", "true");
+        properties.setProperty("mail.smtp.ssl.checkserveridentity", "true");
+        properties.setProperty("mail.smtp.connectiontimeout", "10000");
+        properties.setProperty("mail.smtp.timeout", "20000");
+        properties.setProperty("mail.smtp.writetimeout", "20000");
+        return properties;
     }
 }

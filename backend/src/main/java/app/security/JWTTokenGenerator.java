@@ -1,6 +1,5 @@
 package app.security;
 
-import app.Main;
 import app.daos.UserDAO;
 import app.dtos.UserDTO;
 import app.mappers.UserMapper;
