@@ -5,6 +5,7 @@ import app.daos.WeddingDAO;
 import app.entities.Category;
 import app.entities.Wedding;
 import app.exceptions.ApiException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import io.javalin.http.Context;
@@ -899,7 +900,7 @@ class CategoryServiceTest {
 
     private Context mockContext(Map<String, String> body) {
         Context ctx = mock(Context.class);
-        when(ctx.bodyAsClass(Map.class)).thenReturn(body);
+        when(ctx.<Map<String, String>>bodyAsClass(new TypeReference<Map<String, String>>() {}.getType())).thenReturn(body);
         return ctx;
     }
 
