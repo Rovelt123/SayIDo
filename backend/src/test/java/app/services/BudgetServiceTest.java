@@ -4,35 +4,19 @@ import app.entities.Category;
 import app.entities.Task;
 import app.entities.Wedding;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvFileSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BudgetServiceTest {
 
-    private Wedding weddingFrom(float budget, String categories) {
+    private Wedding weddingWith(float budget, float... prices) {
 
         Wedding wedding = Wedding.builder().budget(budget).build();
+        Category category = Category.builder().title("Venue").position(0).build();
+        wedding.addCategory(category);
 
-        if (categories.equals("-")) {
-            return wedding;
-        }
-
-        String[] groups = categories.split(";", -1);
-
-        for (int i = 0; i < groups.length; i++) {
-
-            Category category = Category.builder().title("Category " + (i + 1)).position(i).build();
-            wedding.addCategory(category);
-
-            if (groups[i].isEmpty()) {
-                continue;
-            }
-
-            for (String price : groups[i].split("\\|")) {
-                category.addTask(Task.builder().title("Task").price(Float.parseFloat(price)).build());
-            }
+        for (float price : prices) {
+            category.addTask(Task.builder().title("Task").price(price).build());
         }
         return wedding;
     }
@@ -59,16 +43,99 @@ public class BudgetServiceTest {
 
     // ________________________________________________________
 
-    @ParameterizedTest(name = "[{index}] {7} - {6}")
-    @CsvFileSource(resources = "/budget-test-cases.csv", numLinesToSkip = 1)
-    void budgetCalculationsFollowTheTestCaseTable(float budget, String categories, double totalSpent, double remaining, double usedPercent, double overrun, String reason, String story) {
+    @Test
+    void totalSpentSumsAllTaskPrices() {
+        assertEquals(3500.5, BudgetService.totalSpent(weddingWith(10000, 1000, 2500.5f)), 0.001);
+    }
 
-        Wedding wedding = weddingFrom(budget, categories);
+    // ________________________________________________________
 
-        assertEquals(totalSpent, BudgetService.totalSpent(wedding), 0.001);
-        assertEquals(remaining, BudgetService.remainingBudget(wedding), 0.001);
-        assertEquals(usedPercent, BudgetService.budgetUsedPercent(wedding), 0.001);
-        assertEquals(overrun, BudgetService.budgetOverrun(wedding), 0.001);
+    @Test
+    void totalSpentIsZeroWhenThereAreNoTasks() {
+        assertEquals(0, BudgetService.totalSpent(weddingWith(10000)), 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void totalSpentReturnsZeroWhenWeddingIsNull() {
+        double result = BudgetService.totalSpent(null);
+
+        assertEquals(0, result, 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void totalSpentSumsPricesAcrossMultipleCategories() {
+        Wedding wedding = weddingWith(10000, 1000, 2000);
+
+        Category catering = categoryWith(1500);
+        wedding.addCategory(catering);
+
+        double result = BudgetService.totalSpent(wedding);
+
+        assertEquals(4500, result, 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void totalSpentCategoryReturnsZeroWhenCategoryIsNull() {
+        double result = BudgetService.totalSpentCategory(null);
+
+        assertEquals(0, result, 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void remainingBudgetIsBudgetMinusSpent() {
+        assertEquals(6500, BudgetService.remainingBudget(weddingWith(10000, 3500)), 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void remainingBudgetIsNegativeWhenSpendingExceedsBudget() {
+        assertEquals(-500, BudgetService.remainingBudget(weddingWith(1000, 1500)), 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void remainingBudgetReturnsZeroWhenWeddingIsNull() {
+        double result = BudgetService.remainingBudget(null);
+
+        assertEquals(0, result, 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void budgetUsedPercentIsTheShareOfTheBudgetSpent() {
+        assertEquals(25, BudgetService.budgetUsedPercent(weddingWith(2000, 500)), 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void budgetUsedPercentIsZeroWhenTheBudgetIsZero() {
+        assertEquals(0, BudgetService.budgetUsedPercent(weddingWith(0, 500)), 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void budgetOverrunIsZeroWhenSpendingIsWithinTheBudget() {
+        assertEquals(0, BudgetService.budgetOverrun(weddingWith(2000, 500)), 0.001);
+    }
+
+    // ________________________________________________________
+
+    @Test
+    void budgetOverrunIsTheAmountAboveTheBudget() {
+        assertEquals(500, BudgetService.budgetOverrun(weddingWith(1000, 1500)), 0.001);
     }
 
 
@@ -91,4 +158,93 @@ public class BudgetServiceTest {
                 0.001
         );
     }
+
+    // --------------------------------------remainingCategoryBudget----------------
+
+    @Test
+    void remainingCategoryBudgetSubtractsSpending() {
+        Category category = categoryWith(100, 200);
+        category.setCategoryBudget(1000);
+        double result = BudgetService.remainingCategoryBudget(category);
+        assertEquals(700, result, 0.001);
+    }
+
+    // ------------------------------------------------------
+
+    @Test
+    void categoryBudgetUsedPercentCalculatesCorrectly() {
+
+        Category category = categoryWith(100, 200);
+        category.setCategoryBudget(1000);
+        double result = BudgetService.categoryBudgetUsedPercent(category);
+        assertEquals(30, result, 0.001);
+    }
+
+    // ------------------------------------------------------
+
+    @Test
+    void categoryBudgetUsedPercentReturnsZeroWhenBudgetIsZero(){
+
+        Category category = categoryWith(100, 200);
+        category.setCategoryBudget(0);
+        double result = BudgetService.categoryBudgetUsedPercent(category);
+        assertEquals(0, result, 0.001);
+    }
+
+    // ------------------------------------------------------
+
+    @Test
+    void budgetUsedPercentReturnsZeroWhenBudgetIsNegative() {
+        Wedding wedding = weddingWith(-1000, 500);
+
+        double result = BudgetService.budgetUsedPercent(wedding);
+
+        assertEquals(0, result, 0.001);
+    }
+
+    // ------------------------------------------------------
+
+    @Test
+    void categoryBudgetOverrunReturnsZeroWhenSpendingIsWithinBudget() {
+        Category category = categoryWith(100, 200);
+        category.setCategoryBudget(500);
+        double result = BudgetService.categoryBudgetOverrun(category);
+        assertEquals(0, result, 0.001);
+    }
+
+    // ------------------------------------------------------
+
+    @Test
+    void categoryBudgetOverrunReturnsAmountAboveBudget() {
+        Category category = categoryWith(100, 200, 300);
+        category.setCategoryBudget(500);
+        double result = BudgetService.categoryBudgetOverrun(category);
+        assertEquals(100, result, 0.001);
+    }
+
+    // ------------------------------------------------------
+
+    @Test
+    void percentageOfTotalSpentCalculatesCorrectly() {
+
+        Wedding wedding = weddingWith(20000, 4000);
+        Category venue = wedding.getCategories().iterator().next();
+        Category catering = categoryWith(6000);
+        wedding.addCategory(catering);
+        double result = BudgetService.percentageOfTotalSpent(venue);
+        assertEquals(40, result, 0.001);
+    }
+
+    // ------------------------------------------------------
+
+    @Test
+    void percentageOfTotalSpentReturnsZeroWhenNothingSpent() {
+
+        Wedding wedding = weddingWith(0);
+        Category venue = wedding.getCategories().iterator().next();
+        double result = BudgetService.percentageOfTotalSpent(venue);
+        assertEquals(0, result, 0.001);
+    }
+
+    // ------------------------------------------------------
 }
