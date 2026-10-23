@@ -36,7 +36,7 @@ jobs:
           cache: maven
 
       - name: Build backend
-        run: mvn package
+        run: mvn verify
 
       - name: Prepare SSH
         if: github.ref == 'refs/heads/Main'
