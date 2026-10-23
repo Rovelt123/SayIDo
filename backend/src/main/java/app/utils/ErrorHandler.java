@@ -141,7 +141,8 @@ public class ErrorHandler {
 
     public static Map<String, String> tryBodyMap(Context ctx, String message) {
         try {
-            return ctx.bodyAsClass(Map.class);
+            Map map = ctx.bodyAsClass(Map.class);
+            return map;
         } catch (Exception e) {
             throw new ApiException(400, message);
         }
