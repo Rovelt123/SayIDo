@@ -22,11 +22,7 @@ public class AccessService implements IAccessService {
     SecurityService securityController = SecurityService.getInstance();
 
     // ________________________________________________________
-
-    /**
-     * This method checks if the user has the necessary roles to access the route.
-     * @param ctx
-     */
+    
     public void accessHandler(Context ctx) {
 
         // If no roles are specified on the endpoint, then anyone can access the route
