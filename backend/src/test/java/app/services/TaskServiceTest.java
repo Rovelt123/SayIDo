@@ -9,6 +9,7 @@ import app.entities.Wedding;
 import app.enums.Priority;
 import app.enums.Status;
 import app.exceptions.ApiException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.javalin.http.Context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ class TaskServiceTest {
 
     private Context mockContext(Map<String, String> body) {
         Context ctx = mock(Context.class);
-        when(ctx.bodyAsClass(Map.class)).thenReturn(body);
+        when(ctx.<Map<String, String>>bodyAsClass(new TypeReference<Map<String, String>>() {}.getType())).thenReturn(body);
         return ctx;
     }
 

@@ -1,6 +1,7 @@
 package app.utils;
 
 import app.exceptions.ApiException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.javalin.http.Context;
 
 import java.time.LocalDate;
@@ -141,7 +142,7 @@ public class ErrorHandler {
 
     public static Map<String, String> tryBodyMap(Context ctx, String message) {
         try {
-            return ctx.bodyAsClass(Map.class);
+            return ctx.bodyAsClass(new TypeReference<Map<String, String>>() {}.getType());
         } catch (Exception e) {
             throw new ApiException(400, message);
         }

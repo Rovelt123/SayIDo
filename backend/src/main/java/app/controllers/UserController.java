@@ -18,6 +18,7 @@ import app.services.mail.MailSender;
 import app.utils.ErrorHandler;
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
+import io.javalin.http.UnauthorizedResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -185,6 +186,9 @@ public class UserController extends BaseController<User, UserDTO> {
 
     private void changePassword(Context ctx) {
         UserDTO user = ctx.attribute("user");
+        if (user == null) {
+            throw new UnauthorizedResponse("Authentication required.");
+        }
         Map<String, String> body = ErrorHandler.tryBodyMap(ctx, Notifications.BODY_EMPTY.getDisplayName());
 
         String newPassword = ErrorHandler.tryString(

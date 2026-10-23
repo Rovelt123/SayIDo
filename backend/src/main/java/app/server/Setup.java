@@ -21,7 +21,7 @@ public class Setup {
     // ________________________________________________________
 
     public Setup(EntityManager em, int port) {
-        this.em = em;
+        Setup.em = em;
         this.accessService = new AccessService();
         this.messageService = new MessageService();
 
