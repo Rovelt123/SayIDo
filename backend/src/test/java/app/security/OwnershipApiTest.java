@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OwnershipApiTest {
 
+    private UUID taskAId;
     private UUID taskBId;
 
     private EntityManagerFactory emf;
@@ -136,6 +137,7 @@ class OwnershipApiTest {
             em.persist(taskA);
             em.persist(taskB);
 
+            taskAId = taskA.getId();
             taskBId = taskB.getId();
 
             //Create or get tokens for both users
@@ -197,9 +199,57 @@ class OwnershipApiTest {
     // ________________________________________________________
 
     @Test
-    void userCannotUpdateOtherUsersTask() {
+    void userCannotUpdateOtherUsersTask() throws IOException, InterruptedException {
 
+        String json = """
+            {
+                "title": "Updated catering"
+            }
+            """;
 
+        HttpClient client = HttpClient.newHttpClient();
+
+        // User A attempts to update User B's task
+        HttpRequest requestB = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:9393/tasks/" + taskBId))
+                .header("Authorization", "Bearer " + tokenA)
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> responseB = client.send(
+                requestB,
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertEquals(404, responseB.statusCode());
+
+        // User A updates their own task
+        HttpRequest requestA = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:9393/tasks/" + taskAId))
+                .header("Authorization", "Bearer " + tokenA)
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> responseA = client.send(
+                requestA,
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        System.out.println("Status: " + responseA.statusCode());
+        System.out.println("Response: " + responseA.body());
+
+        assertEquals(200, responseA.statusCode());
+
+        // Verify changes in the database
+        try (EntityManager em = emf.createEntityManager()) {
+            Task taskA = em.find(Task.class, taskAId);
+            Task taskB = em.find(Task.class, taskBId);
+
+            assertEquals("Updated catering", taskA.getTitle());
+            assertEquals("Decide menu", taskB.getTitle());
+        }
     }
 
     // ________________________________________________________
