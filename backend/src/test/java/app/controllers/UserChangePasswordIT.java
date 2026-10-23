@@ -76,6 +76,45 @@ public class UserChangePasswordIT extends SetupServerIT {
 
 // Assert
         assertEquals(200, changeResponse.statusCode());
+        String oldPasswordJson = """
+                {
+                    "current_password": "Password123!",
+                    "new_password": "AnotherPassword123!",
+                    "repeat_new_password": "AnotherPassword123!"
+                }
+                """;
+        HttpRequest oldPasswordRequest = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:9393/api/users/me/password"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .method(
+                        "PATCH",
+                        HttpRequest.BodyPublishers.ofString(oldPasswordJson)
+                )
+                .build();
+        HttpResponse<String> oldPasswordResponse = HttpClient.newHttpClient()
+                .send(oldPasswordRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(401, oldPasswordResponse.statusCode());
+        assertTrue(oldPasswordResponse.body().contains("Current password is wrong"));
+        String newPasswordJson = """
+                {
+                    "current_password": "NewPassword123!",
+                    "new_password": "AnotherPassword123!",
+                    "repeat_new_password": "AnotherPassword123!"
+                }
+                """;
+        HttpRequest newPasswordRequest = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:9393/api/users/me/password"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .method(
+                        "PATCH",
+                        HttpRequest.BodyPublishers.ofString(newPasswordJson)
+                )
+                .build();
+        HttpResponse<String> newPasswordResponse = HttpClient.newHttpClient()
+                .send(newPasswordRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, newPasswordResponse.statusCode());
 
     }
 
