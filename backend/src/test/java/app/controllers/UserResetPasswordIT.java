@@ -267,6 +267,5 @@ public class UserResetPasswordIT extends SetupServerIT {
 
     }
 
-
 }
 
